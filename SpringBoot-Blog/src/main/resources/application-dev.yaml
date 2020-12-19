@@ -1,0 +1,37 @@
+
+spring:
+  thymeleaf:
+    encoding: utf-8
+    servlet:
+      content-type: text/html
+    cache: false
+
+
+  datasource:
+    username: root
+    password: sss.0310
+    url: jdbc:mysql://localhost:3306/blog?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  mvc:
+    static-path-pattern: /**
+
+  # 整合Mybatis
+mybatis:
+  type-aliases-package: com.wyj.pojo
+  mapper-locations: classpath:mapper/*.xml
+logging:
+  level:
+    root: info
+    com.wyj: debug
+#  file: log/blog.log
+
+# PageHelper
+pagehelper:
+  # 指定数据库
+  helper-dialect: mysql
+  # 默认是false。启用合理化时
+  reasonable: true
+  # 是否支持接口参数来传递分页参数，默认false
+  support-methods-arguments: true
+  params: count=conuntSql

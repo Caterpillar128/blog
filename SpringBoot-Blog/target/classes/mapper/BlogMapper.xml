@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wyj.dao.BlogMapper">
+
+    <resultMap id="updateBlog" type="Blog">
+        <!--column:数据库名   property：javaBean名-->
+        <id column="id" property="id"/>
+        <result column="flag" property="flag"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="first_picture" property="firstPicture"/>
+        <result column="recommend" property="recommend"/>
+        <result column="share_statement" property="shareStatement"/>
+        <result column="appreciation" property="appreciation"/>
+        <result column="commentabled" property="commentabled"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tag_ids" property="tagIds"/>
+        <!-- 分类 -->
+        <association property="type" javaType="Type" >
+            <id column="type_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="showBlog" type="Blog">
+        <!--column:数据库名   property：javaBean名-->
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="recommend" property="recommend"/>
+        <result column="published" property="published"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="views" property="views"/>
+        <result column="first_picture" property="firstPicture"/>
+        <result column="description" property="description"/>
+        <result column="tag_ids" property="tagIds"/>
+        <association property="type" javaType="Type" >
+            <id column="type_id" property="id"/>
+            <result column="name" property="name"/>
+        </association>
+        <association property="user" javaType="User">
+            <id column="user_id" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="username" property="username"/>
+            <result column="email" property="email"/>
+            <result column="avatar" property="avatar"/>
+            <result column="type" property="type"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="detailedBlog" type="Blog">
+        <!--column:数据库名   property：javaBean名-->
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="recommend" property="recommend"/>
+        <result column="content" property="content"/>
+        <result column="flag" property="flag"/>
+        <result column="published" property="published"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="share_statement" property="shareStatement"/>
+        <result column="views" property="views"/>
+        <result column="first_picture" property="firstPicture"/>
+        <result column="description" property="description"/>
+        <result column="tag_ids" property="tagIds"/>
+        <association property="type" javaType="Type" >
+            <id column="typeid" property="id"/>
+            <result column="typename" property="name"/>
+        </association>
+        <association property="user" javaType="User">
+            <id column="user_id" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="username" property="username"/>
+            <result column="email" property="email"/>
+            <result column="avatar" property="avatar"/>
+            <result column="type" property="type"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+        </association>
+        <collection property="tags" ofType="Tag">
+            <id column="tagid" property="id"/>
+            <result column="tagname" property="name"/>
+        </collection>
+    </resultMap>
+
+
+
+    <sql id="saveBlogSql">
+        flag, title, content, first_picture, recommend, share_statement, appreciation
+        , commentabled, create_time, tag_ids, type_id
+    </sql>
+
+    <!--后台展示-->
+    <select id="getBlogById" parameterType="long" resultMap="updateBlog">
+        select * from t_blog b,t_type p where b.type_id = p.id and b.id = #{id}
+    </select>
+
+    <!--前端展示博客详情-->
+    <select id="getDetailedBlogById" resultMap="detailedBlog">
+        select b.id, b.first_picture, b.flag, b.title, b.content, b.views,
+        b.update_time,b.commentabled, b.share_statement, b.appreciation,
+        u.nickname, u.avatar,
+        tag.id tagid, tag.name tagname
+        from t_blog b, t_user u, t_tag tag, t_blog_tags tb
+        where b.user_id = u.id and tb.blog_id = b.id and tb.tag_id = tag.id and  b.id = #{id}
+    </select>
+
+    <!-- 后台：列出博客信息 -->
+    <select id="listBlogs" resultMap="showBlog">
+        SELECT * FROM t_blog b, t_type p, t_user u WHERE b.type_id = p.id AND b.user_id = u.id ORDER BY b.update_time ASC
+    </select>
+
+    <!-- 前端：列出博客信息 -->
+    <select id="receptionListBlogs" resultMap="showBlog">
+        SELECT * FROM t_blog b, t_type p, t_user u WHERE b.type_id = p.id AND b.user_id = u.id ORDER BY b.update_time DESC
+    </select>
+
+    <select id="queryListBlogs" resultMap="showBlog">
+        SELECT * FROM t_blog b, t_type p, t_user u WHERE b.type_id = p.id AND b.user_id = u.id
+        <if test="query != null">
+            and ( title like concat('%',#{query},'%')  or description like concat('%',#{query},'%'))
+        </if>
+        ORDER BY b.update_time DESC
+    </select>
+
+    <!-- 后台：通过搜索列出博客信息 -->
+    <select id="searchAllBlog" parameterType="blog" resultMap="showBlog">
+            select b.id, b.title, b.update_time, b.recommend, b.published, b.type_id, t.id, t.name
+            from t_blog b ,t_type t where  b.type_id = t.id
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title},'%')
+            </if>
+            <if test="typeId != null">
+                and b.type_id = #{typeId}       /*根据博客类型查询*/
+            </if>
+            <if test="recommend != null">
+                and b.recommend = #{recommend}   /*根据博客推荐查询*/
+            </if>
+    </select>
+
+    <!--保存博客-->
+    <insert id="saveBlog"  parameterType="blog">
+        insert into t_blog (title, content, first_picture, flag,
+        views, appreciation, share_statement, commentabled,published,
+        recommend, create_time, update_time, type_id, tag_ids, user_id, description)
+        values (#{title}, #{content}, #{firstPicture}, #{flag}, #{views}, #{appreciation},
+        #{shareStatement}, #{commentabled}, #{published}, #{recommend}, #{createTime},
+        #{updateTime}, #{typeId}, #{tagIds}, #{userId}, #{description});
+    </insert>
+
+
+    <update id="updateBlog" parameterType="blog">
+        /*update 表 set 字段1=值1, 字段2=值2 where 条件;  */
+        update t_blog set published = #{published},flag = #{flag} ,
+        title = #{title}, content = #{content}, type_id = #{typeId}, tag_ids = #{tagIds},
+        first_picture = #{firstPicture} , description = #{description} , recommend = #{recommend} ,
+        share_statement = #{shareStatement}, appreciation = #{appreciation},
+        commentabled = #{commentabled} ,update_time = #{updateTime} where id = #{id};
+    </update>
+
+    <delete id="deleteBlogById" parameterType="long">
+        delete from t_blog where id=#{id}
+    </delete>
+
+    <!--获取最新插入的博客的 id-->
+    <select id="getBlogId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+    <!-- 关联 blog 和 tag 的 id -->
+    <insert id="saveBlogToTagId" parameterType="long">
+        insert into t_blog_tags(blog_id, tag_id) values(#{blogId}, #{tagId})
+    </insert>
+    <delete id="deleteBlogToTagId" parameterType="long">
+        delete from t_blog_tags where blog_id = #{blogId}
+    </delete>
+
+    <!--根据观看次数来推荐的博客-->
+    <select id="topViews" resultType="Blog">
+        SELECT * FROM t_blog ORDER BY views DESC LIMIT 0, 6
+    </select>
+
+
+    <select id="getBlogsByTypeId" parameterType="long" resultMap="detailedBlog">
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description,
+        t.name typename, t.id typeid,
+        u.nickname, u.avatar
+        from t_blog b, t_type t, t_user u
+        where b.type_id = t.id and u.id = b.user_id and b.type_id = #{typeId} order by b.update_time desc
+    </select>
+
+    <select id="getBlogsByTagId" parameterType="long" resultMap="detailedBlog">
+        select b.id, b.title, b.first_picture, b.views, b.update_time, b.description,
+        t.name typename, t.id typeid,
+        t1.name tagname, t1.id tagid,
+        u.nickname, u.avatar
+        from t_blog b, t_type t, t_user u, t_blog_tags tb, t_tag t1
+        where b.type_id = t.id and u.id = b.user_id and tb.blog_id = b.id and tb.tag_id = t1.id and t1.id = #{tagId}
+        order by b.update_time desc
+    </select>
+
+    <select id="findAllYear" resultType="String">
+        select DATE_FORMAT(b.update_time, '%Y') from t_blog b order by b.update_time desc
+    </select>
+
+    <select id="findBlogsByYear" parameterType="string" resultType="blog">
+        select b.title, b.update_time, b.id, b.flag
+        from t_blog b
+        where DATE_FORMAT(b.update_time, "%Y") = #{year}
+    </select>
+
+
+
+
+</mapper>

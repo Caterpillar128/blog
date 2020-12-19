@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragments :: head('标签编写')"></head>
+<body>
+
+  <!--导航-->
+  <nav th:replace="admin/_fragments :: nav(3)" ></nav>
+  <br>
+  <br>
+  <br>
+  <br>
+
+  <!--中间内容-->
+  <div  class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+
+    <form th:action="*{id}==null ? @{/admin/tags} : @{/admin/tags/update}" method="post" th:object="${tag}" class="ui form" th:if="${tag != null}">
+      <div>
+        <input type="hidden" name="id" th:value="${tag.getId()}">
+      </div>
+      <div class="required field">
+        <div class="ui left labeled input">
+          <label class="ui teal basic label">名称</label>
+          <input tag="text" name="name" placeholder="请输入标签名称" th:value="${tag.getName()}" >
+        </div>
+      </div>
+      <div class="ui message" th:unless="${#strings.isEmpty(nameError)}">
+        <div class="ui negative message" >
+          <i class="close icon"></i>
+          <div class="header">提示：</div>
+          <p th:text="${nameError}"></p>
+        </div>
+      </div>
+
+      <div class="ui right aligned container">
+        <button type="submit" class="ui teal button">发布</button>
+      </div>
+    </form>
+
+
+    </div>
+  </div>
+
+
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <!--底部footer-->
+  <footer th:replace="admin/_fragments :: footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+  <script>
+
+    $('.menu.toggle').click(function () {
+      $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+      on : 'hover'
+    });
+
+    $('.ui.form').form({
+      fields : {
+        name : {
+          identifier: 'name',
+          rules: [{
+            type : 'empty',
+            prompt: '请输入分类名称'
+          }]
+        }
+      }
+    });
+
+
+  </script>
+</body>
+</html>

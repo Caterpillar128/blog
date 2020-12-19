@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wyj.dao.TypeMapper">
+
+    <insert id="saveType" parameterType="Type">
+         insert into t_type(id, name) values(#{id}, #{name})
+     </insert>
+
+    <select id="getTypeById" parameterType="long" resultType="Type">
+         select * from t_type where id=#{id}
+     </select>
+
+    <select id="listType" resultType="Type">
+         select * from t_type
+     </select>
+
+    <update id="updateType" parameterType="Type" >
+         update t_type set name = #{name} where id=#{id}
+     </update>
+
+    <delete id="deleteTypeById" parameterType="long">
+         delete from t_type where id=#{id}
+     </delete>
+
+    <select id="getTypeByName" parameterType="string" resultType="Type">
+         select * from t_type where name=#{name}
+     </select>
+
+
+    <!--两个id可能会相冲，取别名即可-->
+    <resultMap id="typeMap" type="Type">
+        <id property="id" column="tid"/>
+        <result property="name" column="tname"/>
+        <collection property="blogs" ofType="Blog">
+            <id property="id" column="bid"/>
+            <result property="title" column="title"/>
+            <result property="typeId" column="type_id"/>
+        </collection>
+    </resultMap>
+    <!-- 查询前10 的 类型 -->
+    <select id="queryTypeBefore" parameterType="int" resultMap="typeMap">
+        select t.id tid, t.name tname, b.id bid, count(t.id) as typeCount
+        from t_type t , t_blog b where b.type_id = t.id
+        group by t.id, t.name, b.id order by typeCount DESC limit 0, #{length}
+    </select>
+
+    <select id="getTypeToBlog" resultMap="typeMap">
+        select t.id tid, t.name tname, b.id bid, b.title, b.type_id
+            from t_type t left join t_blog b on t.id = b.type_id
+    </select>
+
+</mapper>

@@ -1,0 +1,18 @@
+spring:
+  thymeleaf:
+    mode: HTML
+  datasource:
+    username: root
+    password: sss.0310
+    url: jdbc:mysql://localhost:3306/springboot_01?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.NonRegisteringDriver
+
+  # 整合Mybatis
+mybatis:
+  type-aliases-package: com.wyj.entry
+  mapper-locations: classpath:mybatis/mapper/*.xml
+logging:
+  level:
+    root: info
+    com.wyj: debug
+#  file: log/blog.log

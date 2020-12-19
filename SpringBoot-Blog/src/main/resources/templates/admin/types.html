@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragments :: head('分类管理')"></head>
+<body>
+
+  <!--导航-->
+  <nav th:replace="admin/_fragments :: nav(2)" ></nav>
+
+
+  <!--中间内容-->
+  <div  class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+      <div class="ui message" th:unless="${#strings.isEmpty(tagMsg)}">
+        <i class="close icon"></i>
+        <div class="header">提示：</div>
+        <p th:text="${typeMsg}"></p>
+      </div>
+      <table class="ui celled table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>分类名称</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="type,iterStat : ${pageInfo.list}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${type.name}"></td>
+            <td>
+              <a href="#" th:href="@{/admin/types/{id}/toUpdate(id=${type.id})}" class="ui mini teal basic button">编辑</a>
+              <a th:href="@{/admin/types/{id}/delete(id=${type.id})}" class="ui mini red basic button">删除</a>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="6">
+              <div class="ui mini pagination menu">
+                <!-- th:href="@{/admin/tyes/${type.pageNum}+1" -->
+                <a th:href="@{/admin/types(pageNum=${pageInfo.pageNum}-1)}" class=" item" th:if="${pageInfo.hasPreviousPage}">上一页</a>
+                <a th:href="@{/admin/types(pageNum=${pageInfo.pageNum}+1)}" class=" item" th:if="${pageInfo.hasNextPage}">下一页</a>
+              </div>
+              <a th:href="@{/admin/types/addType}" class="ui mini right floated teal basic button">新增</a>
+            </th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <br>
+  <br>
+  <!--底部footer-->
+  <footer th:replace="admin/_fragments :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+  <script>
+    $('.menu.toggle').click(function () {
+      $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+      on : 'hover'
+    });
+
+    // 消息提示可关闭
+    $('.message i .close').on('click', function () {
+      $(this)
+        .closest('. message')
+        .transition('fade');
+    });
+  </script>
+</body>
+</html>

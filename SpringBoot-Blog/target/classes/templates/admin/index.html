@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="admin/_fragments :: head('博客后台首页')"></head>
+<body>
+
+  <!--导航-->
+  <nav th:replace="admin/_fragments :: nav(0)" ></nav>
+
+  <!--中间内容-->
+  <div class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+      <div class="ui success large message">
+        <h2>Hi</h2>
+        <p>十万，欢迎登录...</p>
+      </div>
+      <img src="http://f.hiphotos.baidu.com/zhidao/pic/item/b3119313b07eca80c0fcce8a912397dda04483e6.jpg" alt="" class="ui rounded bordered fluid image">
+    </div>
+  </div>
+
+
+
+  <br>
+  <br>
+  <!--底部footer-->
+  <footer th:replace="admin/_fragments :: footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+  <script>
+    $('.menu.toggle').click(function () {
+      $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+      on : 'hover'
+    });
+
+  </script>
+</body>
+</html>
